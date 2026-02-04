@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ext.sizetypevalidator.core.FileValidator
+import com.ext.sizetypevalidator.core.ListValidator
 import com.ext.sizetypevalidator.model.FileType
 import com.ext.sizetypevalidator.model.ValidationResult
 import java.io.File
@@ -24,26 +25,20 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val picker =
-            registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-                if (uri != null) {
-                    val result = FileValidator
-                        .from(this, uri)
-                        .allowTypes(FileType.VIDEO)
-                        .maxVideoDuration(10) // 10 seconds
-                        .validate()
+        val result = ListValidator
+            .from(listOf(1, 2, 3))
+            .minSize(2)
+            .maxSize(5)
+            .allowEmpty(false)
+            .validate()
 
-                    when (result) {
-                        is ValidationResult.Success ->
-                            Log.d("Validator", "✅ URI validation success")
+        when (result) {
+            is ValidationResult.Success ->
+                Log.i("ListValidator", "✅ List validation success")
 
-                        is ValidationResult.Error ->
-                            Log.e("Validator", "❌ ${result.message}")
-                    }
-                }
-            }
-        findViewById<Button>(R.id.btnPickImage).setOnClickListener {
-            picker.launch("video/*")
+            is ValidationResult.Error ->
+                Log.e("ListValidator", "❌ ${result.message}")
         }
+
     }
 }
