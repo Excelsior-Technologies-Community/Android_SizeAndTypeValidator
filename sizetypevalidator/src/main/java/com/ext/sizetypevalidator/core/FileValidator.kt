@@ -6,6 +6,7 @@ import android.util.Log
 import com.ext.sizetypevalidator.model.FileType
 import com.ext.sizetypevalidator.model.ValidationResult
 import com.ext.sizetypevalidator.util.FileUtils
+import com.ext.sizetypevalidator.util.ImageUtils
 import com.ext.sizetypevalidator.util.UriUtils
 import java.io.File
 
@@ -15,6 +16,9 @@ class FileValidator private constructor(
 
     private var maxSizeMB: Double? = null
     private var allowedTypes: List<FileType>? = null
+    private var maxImageWidth: Int? = null
+    private var maxImageHeight: Int? = null
+
 
     companion object {
 
@@ -62,6 +66,30 @@ class FileValidator private constructor(
             }
         }
 
+        maxImageWidth?.let { maxW ->
+            maxImageHeight?.let { maxH ->
+                val dimensions = ImageUtils.getImageDimensions(file)
+                    ?: return ValidationResult.Error("Unable to read image dimensions")
+
+                val (width, height) = dimensions
+
+                if (width > maxW || height > maxH) {
+                    return ValidationResult.Error(
+                        "Image resolution ${width}x${height} exceeds allowed ${maxW}x${maxH}"
+                    )
+                }
+            }
+        }
+
+
         return ValidationResult.Success
     }
+    fun maxImageResolution(
+        maxWidth: Int,
+        maxHeight: Int
+    ) = apply {
+        this.maxImageWidth = maxWidth
+        this.maxImageHeight = maxHeight
+    }
+
 }

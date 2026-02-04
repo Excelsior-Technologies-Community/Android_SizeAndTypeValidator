@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
                         .from(this, uri)
                         .maxSizeMB(5.0)
                         .allowTypes(FileType.IMAGE)
+                        .maxImageResolution(
+                            maxWidth = 1000,
+                            maxHeight = 1000
+                        )
                         .validate()
 
                     when (result) {
