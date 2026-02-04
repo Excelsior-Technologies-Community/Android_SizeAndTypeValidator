@@ -8,6 +8,7 @@ import com.ext.sizetypevalidator.model.ValidationResult
 import com.ext.sizetypevalidator.util.FileUtils
 import com.ext.sizetypevalidator.util.ImageUtils
 import com.ext.sizetypevalidator.util.UriUtils
+import com.ext.sizetypevalidator.util.VideoUtils
 import java.io.File
 
 class FileValidator private constructor(
@@ -18,7 +19,7 @@ class FileValidator private constructor(
     private var allowedTypes: List<FileType>? = null
     private var maxImageWidth: Int? = null
     private var maxImageHeight: Int? = null
-
+    private var maxVideoDurationSeconds: Long? = null
 
     companion object {
 
@@ -81,6 +82,17 @@ class FileValidator private constructor(
             }
         }
 
+        maxVideoDurationSeconds?.let { maxSeconds ->
+            val duration = VideoUtils.getVideoDurationSeconds(file)
+                ?: return ValidationResult.Error("Unable to read video duration")
+
+            if (duration > maxSeconds) {
+                return ValidationResult.Error(
+                    "Video duration ${duration}s exceeds allowed ${maxSeconds}s"
+                )
+            }
+        }
+
 
         return ValidationResult.Success
     }
@@ -91,5 +103,10 @@ class FileValidator private constructor(
         this.maxImageWidth = maxWidth
         this.maxImageHeight = maxHeight
     }
+
+    fun maxVideoDuration(seconds: Long) = apply {
+        this.maxVideoDurationSeconds = seconds
+    }
+
 
 }

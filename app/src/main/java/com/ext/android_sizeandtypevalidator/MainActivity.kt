@@ -29,12 +29,8 @@ class MainActivity : AppCompatActivity() {
                 if (uri != null) {
                     val result = FileValidator
                         .from(this, uri)
-                        .maxSizeMB(5.0)
-                        .allowTypes(FileType.IMAGE)
-                        .maxImageResolution(
-                            maxWidth = 1000,
-                            maxHeight = 1000
-                        )
+                        .allowTypes(FileType.VIDEO)
+                        .maxVideoDuration(10) // 10 seconds
                         .validate()
 
                     when (result) {
@@ -47,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         findViewById<Button>(R.id.btnPickImage).setOnClickListener {
-            picker.launch("image/*")
+            picker.launch("video/*")
         }
     }
 }
